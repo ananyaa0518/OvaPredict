@@ -52,11 +52,6 @@ results/
 *.jpg
 *.jpeg
 
-# Dataset files (sensitive data)
-data/*.csv
-data/*.xlsx
-data/*.xls
-data/*.parquet
 
 # Model files (trained models)
 *.pkl
