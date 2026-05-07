@@ -1,7 +1,4 @@
-# ================================
 # PCOS PREDICTION (FULL FIXED)
-# ================================
-
 import pandas as pd
 import numpy as np
 import warnings
@@ -18,9 +15,7 @@ from sklearn.metrics import (
 )
 from imblearn.over_sampling import SMOTE
 
-# ================================
 # 1. LOAD DATA
-# ================================
 df = pd.read_csv("data/cleaned_pcos.csv")
 
 # Clean column names
@@ -33,9 +28,7 @@ print(f"Shape: {df.shape}")
 print(df['PCOS (Y/N)'].value_counts(normalize=True))
 
 
-# ================================
 # 2. CLEAN NON-NUMERIC VALUES 🚨
-# ================================
 
 # Replace common garbage values with NaN
 df.replace(['a', 'A', '?', ' ', ''], np.nan, inplace=True)
@@ -47,24 +40,18 @@ df = df.apply(pd.to_numeric, errors='coerce')
 df.fillna(df.mean(), inplace=True)
 
 
-# ================================
 # 3. SPLIT FEATURES & TARGET
-# ================================
 X = df.drop('PCOS (Y/N)', axis=1)
 y = df['PCOS (Y/N)']
 
 
-# ================================
 # 4. TRAIN-TEST SPLIT
-# ================================
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y
 )
 
 
-# ================================
 # 5. APPLY SMOTE
-# ================================
 print("\nBefore SMOTE:\n", y_train.value_counts())
 
 sm = SMOTE(random_state=42)
@@ -73,9 +60,7 @@ X_train_smote, y_train_smote = sm.fit_resample(X_train, y_train)
 print("\nAfter SMOTE:\n", y_train_smote.value_counts())
 
 
-# ================================
 # 6. DEFINE MODELS
-# ================================
 models = {
 
     "Logistic Regression": LogisticRegression(
@@ -108,9 +93,7 @@ models = {
 }
 
 
-# ================================
 # 7. TRAIN & EVALUATE
-# ================================
 results = []
 
 for name, model in models.items():
@@ -156,9 +139,7 @@ for name, model in models.items():
     })
 
 
-# ================================
 # 8. FINAL RESULTS
-# ================================
 print("\n" + "=" * 70)
 print("FINAL RESULTS")
 print("=" * 70)
@@ -176,3 +157,39 @@ best_model = models["Random Forest"]
 joblib.dump(best_model, "data/random_forest_model.pkl")
 
 print("\n✅ Results and model saved successfully!")
+
+from sklearn.metrics import ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+ConfusionMatrixDisplay.from_estimator(model, X_test, y_test)
+
+plt.savefig("reports/confusion_matrix.png")
+plt.close()
+
+from sklearn.metrics import RocCurveDisplay
+
+RocCurveDisplay.from_estimator(model, X_test, y_test)
+
+plt.savefig("reports/roc_curve.png")
+plt.close()
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+importance = model.feature_importances_
+
+importance_df = pd.DataFrame({
+    "Feature": X.columns,
+    "Importance": importance
+}).sort_values(by="Importance", ascending=False)
+
+plt.figure(figsize=(10,6))
+plt.barh(
+    importance_df["Feature"][:10],
+    importance_df["Importance"][:10]
+)
+
+plt.gca().invert_yaxis()
+
+plt.savefig("reports/feature_importance.png")
+plt.close()

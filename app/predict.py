@@ -54,6 +54,6 @@ prediction = model.predict(sample_df)
 # Output
 # -------------------------------
 if prediction[0] == 1:
-    print("\n⚠️ High Risk of PCOS")
+    print("\nHigh Risk of PCOS")
 else:
-    print("\n✅ Low Risk of PCOS")
+    print("\nLow Risk of PCOS")
