@@ -48,9 +48,6 @@ share/python-wheels/
 logs/
 outputs/
 results/
-*.png
-*.jpg
-*.jpeg
 
 
 # Model files (trained models)
@@ -60,7 +57,7 @@ results/
 *.h5
 *.pt
 *.pth
-models/
+
 checkpoints/
 
 # Temporary files
